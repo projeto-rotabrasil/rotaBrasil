@@ -1,205 +1,127 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { User, Menu, X } from 'lucide-react'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Menu, X } from 'lucide-react'
+import { useFavoritos } from '../hooks/useFavoritos'
+
+const LINKS = [
+  { to: '/', rotulo: 'Home', fim: true },
+  { to: '/explorar', rotulo: 'Explorar', fim: false },
+  { to: '/roteiro', rotulo: 'Meu roteiro', fim: false },
+]
+
+const classeLink = ({ isActive }: { isActive: boolean }) =>
+  `no-underline font-medium transition-colors hover:text-bm-teal-strong ${
+    isActive ? 'text-bm-teal-strong' : 'text-text-main'
+  }`
 
 const Navbar = () => {
-  const navigate = useNavigate()
-
-  const usuario = JSON.parse(
-    localStorage.getItem('usuario') || 'null'
-  )
-
-  const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('usuario')
-    navigate('/')
-    window.location.reload()
-  }
-
-  const [mostrarPopup, setMostrarPopup] = useState(false)
-  const [fotoPerfil, setFotoPerfil] = useState<string | null>(null)
-  useEffect(() => {
-  if (usuario?.foto_perfil) {
-    setFotoPerfil(
-      `http://localhost:5000/uploads/fotos/${usuario.foto_perfil}`
-    )
-  }
-}, [usuario])
-
   const [menuAberto, setMenuAberto] = useState(false)
+  const { pathname } = useLocation()
+  const { total } = useFavoritos()
 
-  const trocarFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const arquivo = e.target.files?.[0]
+  // Fecha o menu do celular ao trocar de página ou apertar Esc
+  useEffect(() => {
+    setMenuAberto(false)
+  }, [pathname])
 
-  if (!arquivo) return
+  useEffect(() => {
+    if (!menuAberto) return
 
-  const formData = new FormData()
-
-  formData.append('foto', arquivo)
-  formData.append('user_id', usuario.id)
-
-  try {
-    const resposta = await fetch(
-      'http://localhost:5000/upload-foto',
-      {
-        method: 'POST',
-        body: formData
-      }
-    )
-
-    const dados = await resposta.json()
-
-    if (resposta.ok) {
-      const fotoUrl =`http://localhost:5000/uploads/fotos/${dados.foto}?t=${Date.now()}`
-
-      setFotoPerfil(fotoUrl)
-
-      const usuarioAtualizado = {
-        ...usuario,
-        foto_perfil: dados.foto
-      }
-
-      localStorage.setItem(
-        'usuario',
-        JSON.stringify(usuarioAtualizado)
-      )
-
-      setMostrarPopup(false)
+    const aoApertarTecla = (evento: KeyboardEvent) => {
+      if (evento.key === 'Escape') setMenuAberto(false)
     }
-  } catch (erro) {
-    console.error(erro)
-  }
-}
+
+    window.addEventListener('keydown', aoApertarTecla)
+    return () => window.removeEventListener('keydown', aoApertarTecla)
+  }, [menuAberto])
+
+  const contador =
+    total > 0 ? (
+      <span className="ml-2 rounded-full bg-bm-dark-green px-2 py-0.5 text-xs font-bold text-white">
+        {total}
+        <span className="sr-only"> {total === 1 ? 'destino salvo' : 'destinos salvos'}</span>
+      </span>
+    ) : null
+
+  const destinoDoBotao = total > 0 ? '/roteiro' : '/explorar'
 
   return (
-    <>
-      <nav className="w-full mx-auto max-w-[1200px] px-8 max-[600px]:px-4 py-6 flex justify-between items-center">
-
-        {/* Logo */}
-        <div className="text-[#485C11] font-black text-[1.25rem] leading-[1.1]">
-          ROTA<br />BRASIL.
-        </div>
-
-        {/* Links — desktop */}
-        <div className="hidden min-[900px]:flex items-center gap-8">
-          <Link to="/" className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-            Home
-          </Link>
-          <Link to="/explorar" className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-            Explorar
-          </Link>
-
-          {usuario ? (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full overflow-hidden border cursor-pointer" onClick={() => setMostrarPopup(true)}>
-                  {fotoPerfil ? (
-                    <img src={fotoPerfil} alt="Perfil" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-slate-200 flex items-center justify-center">
-                      <User size={20} />
-                    </div>
-                  )}
-                </div>
-                <span className="text-[#549E9C] font-medium">Olá, {usuario.nome}</span>
-              </div>
-              <button onClick={logout} className="bg-transparent border-none cursor-pointer text-[#0f172a] font-medium hover:text-[#549E9C]">
-                Sair
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-                Entrar
-              </Link>
-              <Link to="/cadastro" className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-                Cadastrar
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Botão Planejar — desktop */}
+    <header className="sticky top-0 z-40 bg-bg/90 backdrop-blur">
+      <nav
+        aria-label="Navegação principal"
+        className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-8 py-4 max-[600px]:px-4"
+      >
         <Link
-          to="/explorar"
-          className="hidden min-[900px]:inline-flex bg-[#485C11] text-white no-underline px-6 py-3 rounded-full font-bold hover:opacity-90 transition-opacity items-center justify-center"
+          to="/"
+          className="flex items-center gap-3 text-[1.25rem] font-extrabold leading-[1.1] text-bm-dark-green no-underline"
+        >
+          <img
+            src={`${import.meta.env.BASE_URL}logo-emblema.png`}
+            alt=""
+            width={44}
+            height={44}
+            className="h-11 w-11 rounded-full"
+          />
+          <span>
+            ROTA
+            <br />
+            BRASIL.
+          </span>
+        </Link>
+
+        {/* Links: desktop */}
+        <div className="hidden items-center gap-8 min-[900px]:flex">
+          {LINKS.map((link) => (
+            <NavLink key={link.to} to={link.to} end={link.fim} className={classeLink}>
+              {link.rotulo}
+              {link.to === '/roteiro' && contador}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Botão: desktop */}
+        <Link
+          to={destinoDoBotao}
+          className="hidden items-center justify-center rounded-full bg-bm-dark-green px-6 py-3 font-bold text-white no-underline transition-opacity hover:opacity-90 min-[900px]:inline-flex"
         >
           Planejar Viagem
         </Link>
 
-        {/* Botão hambúrguer — mobile */}
+        {/* Hambúrguer: celular */}
         <button
-          className="min-[900px]:hidden flex items-center justify-center p-2 rounded-lg text-[#485C11] hover:bg-slate-100 transition"
-          onClick={() => setMenuAberto(!menuAberto)}
-          aria-label="Menu"
+          type="button"
+          className="flex cursor-pointer items-center justify-center rounded-lg border-none bg-transparent p-2 text-bm-dark-green transition hover:bg-slate-100 min-[900px]:hidden"
+          onClick={() => setMenuAberto((aberto) => !aberto)}
+          aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuAberto}
+          aria-controls="menu-mobile"
         >
-          {menuAberto ? <X size={28} /> : <Menu size={28} />}
+          {menuAberto ? <X size={28} aria-hidden="true" /> : <Menu size={28} aria-hidden="true" />}
         </button>
       </nav>
 
-      {/* Menu mobile */}
+      {/* Menu: celular */}
       {menuAberto && (
-        <div className="min-[900px]:hidden bg-white border-t border-slate-100 shadow-md px-8 py-6 flex flex-col gap-5">
-          <Link to="/" onClick={() => setMenuAberto(false)} className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-            Home
-          </Link>
-          <Link to="/explorar" onClick={() => setMenuAberto(false)} className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-            Explorar
-          </Link>
-
-          {usuario ? (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full overflow-hidden border cursor-pointer" onClick={() => { setMostrarPopup(true); setMenuAberto(false) }}>
-                  {fotoPerfil ? (
-                    <img src={fotoPerfil} alt="Perfil" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-slate-200 flex items-center justify-center">
-                      <User size={20} />
-                    </div>
-                  )}
-                </div>
-                <span className="text-[#549E9C] font-medium">Olá, {usuario.nome}</span>
-              </div>
-              <button onClick={() => { logout(); setMenuAberto(false) }} className="text-left bg-transparent border-none cursor-pointer text-[#0f172a] font-medium hover:text-[#549E9C]">
-                Sair
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" onClick={() => setMenuAberto(false)} className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-                Entrar
-              </Link>
-              <Link to="/cadastro" onClick={() => setMenuAberto(false)} className="no-underline text-[#0f172a] font-medium hover:text-[#549E9C] transition-colors">
-                Cadastrar
-              </Link>
-            </>
-          )}
+        <div
+          id="menu-mobile"
+          className="flex flex-col gap-5 border-t border-slate-100 bg-white px-8 py-6 shadow-md min-[900px]:hidden"
+        >
+          {LINKS.map((link) => (
+            <NavLink key={link.to} to={link.to} end={link.fim} className={classeLink}>
+              {link.rotulo}
+              {link.to === '/roteiro' && contador}
+            </NavLink>
+          ))}
 
           <Link
-            to="/explorar"
-            onClick={() => setMenuAberto(false)}
-            className="inline-flex bg-[#485C11] text-white no-underline px-6 py-3 rounded-full font-bold hover:opacity-90 transition-opacity items-center justify-center text-center"
+            to={destinoDoBotao}
+            className="inline-flex items-center justify-center rounded-full bg-bm-dark-green px-6 py-3 text-center font-bold text-white no-underline transition-opacity hover:opacity-90"
           >
             Planejar Viagem
           </Link>
         </div>
       )}
-
-      {/* Popup foto de perfil */}
-      {mostrarPopup && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h2 className="font-bold mb-4">Alterar foto de perfil</h2>
-            <input type="file" accept="image/*" onChange={trocarFoto} />
-            <button onClick={() => setMostrarPopup(false)} className="mt-4 px-4 py-2 bg-slate-200 rounded">
-              Fechar
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+    </header>
   )
 }
 

@@ -11,43 +11,38 @@ export interface EstadoIBGE {
   regiao: RegiaoIBGE
 }
 
-export interface MunicipioIBGE {
-  id: number
-  nome: string
-}
-
 const IBGE_BASE_URL = 'https://servicodados.ibge.gov.br/api/v1/localidades'
 
-export async function getRegioes(): Promise<RegiaoIBGE[]> {
-  const response = await fetch(`${IBGE_BASE_URL}/regioes`)
+// Regiões e estados quase nunca mudam: uma chamada por sessão é suficiente.
+function comCache<T>(carregar: () => Promise<T>): () => Promise<T> {
+  let promessa: Promise<T> | null = null
+
+  return () => {
+    if (!promessa) {
+      promessa = carregar().catch((erro) => {
+        promessa = null
+        throw erro
+      })
+    }
+
+    return promessa
+  }
+}
+
+async function buscar<T>(caminho: string, mensagemErro: string): Promise<T> {
+  const response = await fetch(`${IBGE_BASE_URL}${caminho}`)
 
   if (!response.ok) {
-    throw new Error('Erro ao buscar regiões do IBGE')
+    throw new Error(mensagemErro)
   }
 
   return response.json()
 }
 
-export async function getEstados(): Promise<EstadoIBGE[]> {
-  const response = await fetch(`${IBGE_BASE_URL}/estados?orderBy=nome`)
+export const getRegioes = comCache(() =>
+  buscar<RegiaoIBGE[]>('/regioes', 'Erro ao buscar regiões do IBGE')
+)
 
-  if (!response.ok) {
-    throw new Error('Erro ao buscar estados do IBGE')
-  }
-
-  return response.json()
-}
-
-export async function getMunicipiosPorEstado(
-  uf: string
-): Promise<MunicipioIBGE[]> {
-  const response = await fetch(
-    `${IBGE_BASE_URL}/estados/${uf}/municipios?orderBy=nome`
-  )
-
-  if (!response.ok) {
-    throw new Error('Erro ao buscar municípios do IBGE')
-  }
-
-  return response.json()
-}
+export const getEstados = comCache(() =>
+  buscar<EstadoIBGE[]>('/estados?orderBy=nome', 'Erro ao buscar estados do IBGE')
+)

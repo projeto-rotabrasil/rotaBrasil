@@ -3,12 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RotaBrasil</title>
+
+    <title>RotaBrasil — Explore parques nacionais e destinos do Brasil</title>
+    <meta
+      name="description"
+      content="Descubra parques nacionais, praias, chapadas e tesouros escondidos do Brasil. Filtre por região e bioma, veja o clima, planeje com os feriadões e monte seu roteiro."
+    />
+    <meta name="theme-color" content="#485C11" />
+
+    <!-- Ícones e manifesto -->
+    <link rel="icon" href="%BASE_URL%favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+    <link rel="manifest" href="%BASE_URL%manifest.json" />
+
+    <!-- Compartilhamento (WhatsApp, Instagram, LinkedIn, X...) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="RotaBrasil" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="RotaBrasil — Explore parques nacionais e destinos do Brasil" />
+    <meta
+      property="og:description"
+      content="Parques nacionais, praias, chapadas e tesouros escondidos do Brasil, com mapa interativo, clima e planejamento de feriadões."
+    />
+    <meta property="og:url" content="https://projeto-rotabrasil.github.io/rotaBrasil/" />
+    <meta property="og:image" content="https://projeto-rotabrasil.github.io/rotaBrasil/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Fonte -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
+    <noscript>O RotaBrasil precisa de JavaScript para funcionar. Ative o JavaScript no navegador e recarregue a página.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
