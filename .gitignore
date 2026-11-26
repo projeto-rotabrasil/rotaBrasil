@@ -1,2 +1,22 @@
+# Dependências e build
 node_modules
+dist
+*.tsbuildinfo
+
+# Variáveis de ambiente (use o .env.example como modelo)
 .env
+.env.*
+!.env.example
+
+# Arquivos temporários do script de fotos (cache de respostas e página de revisão)
+scripts/fotos-cache.json
+scripts/fotos-estetica.json
+scripts/fotos-revisao.html
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

@@ -1,25 +1,15 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": ".",
+  "name": "RotaBrasil",
+  "short_name": "RotaBrasil",
+  "description": "Explore parques nacionais e destinos do Brasil, veja o clima e monte seu roteiro.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#485C11",
+  "background_color": "#F8F9FA",
+  "icons": [
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
 }

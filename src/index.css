@@ -1,19 +1,103 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-bm-dark-green: #485C11;
   --color-bm-muted-green: #8E9C78;
+  /* Verde-oliva mais escuro: texto branco sobre ele passa no contraste AA */
+  --color-bm-olive: #66744F;
   --color-bm-light-green: #DFECC6;
+  --color-bm-light-green-hover: #cfe4aa;
   --color-bm-teal: #549E9C;
+  /* Teal escurecido para texto e fundos com texto branco (contraste AA) */
+  --color-bm-teal-strong: #347F7D;
   --color-bm-light-blue: #CCE5F2;
+  /* Amarelo do sol do logo: acento para destaques, selos e botões de ação */
+  --color-bm-sun: #F2B705;
+  --color-bm-sun-soft: #FFF1BF;
+  /* Verde bem escuro para o rodapé e fundos de destaque */
+  --color-bm-forest: #243208;
   --color-bg: #F8F9FA;
   --color-text-main: #0f172a;
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-bg);
-  color: var(--color-text-main);
+/* Escala tipográfica: poucos tamanhos, usados sempre do mesmo jeito */
+@utility titulo-pagina {
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+@utility titulo-secao {
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+@utility rotulo {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-bm-teal-strong);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Mapa interativo do Brasil */
+.estado-mapa {
+  stroke: white;
+  stroke-width: 1.3;
+  cursor: pointer;
+  transition: 0.2s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.estado-mapa:hover {
+  filter: brightness(0.9);
+  transform: scale(1.015);
+}
+.estado-mapa:focus-visible {
+  outline: none;
+  stroke: #0f172a;
+  stroke-width: 2.5;
+}
+/* A cor de cada estado (por quantidade de destinos) é definida no componente do mapa */
+.estado-desativado { opacity: 0.18; }
+.estado-selecionado {
+  opacity: 1;
+  stroke: #0f172a;
+  stroke-width: 2.5;
+  filter: brightness(0.95);
 }
